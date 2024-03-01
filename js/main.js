@@ -57,8 +57,10 @@
                     select.removeChild(select.firstChild);
                 }
             });
+            console.log(`[gotDevices] device number is ${JSON.stringify(deviceInfos.length)}`);
             for (let i = 0; i !== deviceInfos.length; ++i) {
                 const deviceInfo = deviceInfos[i];
+                console.log(`[gotDevices] device[${i}] is ${JSON.stringify(deviceInfo)}`);
                 const option = document.createElement('option');
                 option.value = deviceInfo.deviceId;
                 if (deviceInfo.kind === 'audioinput') {
