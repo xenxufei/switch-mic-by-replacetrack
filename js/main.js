@@ -85,6 +85,7 @@
         }
 
         function gotMicrophoneStream(stream) {
+            let prevStream = localstreamContainer.stream;
             localstreamContainer.stream =stream;
             if (callButton.disabled && !hangupButton.disabled) { // in a call
                 var outTrack = stream.getAudioTracks()[0];
@@ -101,7 +102,24 @@
                         })
                         .catch((e) => {
                             console.log("gotMicrophoneStream:replaceTrack fails, track ID:" + outTrack.id + " readyState:" + outTrack.readyState + " e:" + JSON.stringify(e));
+                        })
+                        .finally(() => {
+                            console.log("gotMicrophoneStream:replaceTrack finally, stop old outoing audio track");
+                            // stop old outoing audio track
+                            if (prevStream) {
+                                prevStream.getTracks().forEach( (track) => {
+                                    track.stop();
+                                });
+                            }
                         });
+                }
+            } else {
+                console.log("gotMicrophoneStream:common, stop old outoing audio track");
+                // stop old outoing audio track
+                if (prevStream) {
+                    prevStream.getTracks().forEach( (track) => {
+                        track.stop();
+                    });
                 }
             }
             // return CitrixWebRTC.enumerateDevices();
@@ -115,10 +133,10 @@
         function onMicrophoneChanged() {
             if (callButton.disabled && !hangupButton.disabled) {
                 // stop current track
-                localstreamContainer.stream.getTracks().forEach( (track) => {
-                    track.stop();
-                });
-                delete localstreamContainer.stream;
+                // localstreamContainer.stream.getTracks().forEach( (track) => {
+                //     track.stop();
+                // });
+                // delete localstreamContainer.stream;
 
                 // CitrixWebRTC.getUserMedia(getConstraint()).then(gotMicrophoneStream).then(gotDevices).catch(handleError);
                 navigator.mediaDevices.getUserMedia(getConstraint()).then(gotMicrophoneStream).then(gotDevices).catch(handleError);
